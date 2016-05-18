@@ -170,6 +170,19 @@ ffi.cdef
     OptimizeType
   } ImageType;
 
+  // Resource Type (for SetResourceLimit)
+  typedef enum
+  {
+    DiskResource,
+    FileResource,
+    MapResource,
+    MemoryResource,
+    PixelsResource,
+    ThreadsResource,
+    WidthResource,
+    HeightResource
+  } ResourceType;
+
   // Global context:
   void MagickWandGenesis();
   void InitializeMagick();
@@ -185,6 +198,9 @@ ffi.cdef
   void PixelSetRed(PixelWand *wand,const double red);
   void PixelSetGreen(PixelWand *wand,const double green);
   void PixelSetBlue(PixelWand *wand,const double blue);
+
+  // Resource Limit
+  unsigned int MagickSetResourceLimit(const ResourceType type, const unsigned long *limit );
 
   // Read/Write:
   MagickBooleanType MagickReadImage(MagickWand*, const char*);
@@ -309,6 +325,9 @@ local clib = ffi.load('GraphicsMagickWand')
 
 -- Initialize lib:
 clib.InitializeMagick();
+
+local threadLimit = ffi.new('unsigned long[1]', 1)
+clib.MagickSetResourceLimit(clib['ThreadsResource'], threadLimit);
 
 -- Image object:
 local Image = {
